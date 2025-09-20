@@ -32,7 +32,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           <p className="text-sm text-muted-foreground">
             {character.description}
           </p>
