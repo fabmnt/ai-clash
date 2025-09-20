@@ -5,6 +5,7 @@ import {
   MessagesSquareIcon,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Character } from "../schemas/character-schema";
@@ -38,8 +39,10 @@ export function CharacterCard({ character }: CharacterCardProps) {
           </div>
           <div className="flex justify-between">
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="icon">
-                <MessagesSquareIcon />
+              <Button variant="outline" size="icon" asChild>
+                <Link href={`/chat/${character._id}`}>
+                  <MessagesSquareIcon />
+                </Link>
               </Button>
               <Button variant="outline" size="icon">
                 <MessageCirclePlusIcon />

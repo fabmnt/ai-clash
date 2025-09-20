@@ -1,9 +1,10 @@
 import { SearchIcon } from "lucide-react";
 import { CharacterCard } from "@/characters/components/character-card";
 import type { Character } from "@/characters/schemas/character-schema";
+import { Container } from "@/components/container";
 import { Input } from "@/components/ui/input";
 
-const characters: Character[] = [
+export const characters: Character[] = [
   {
     _id: "2",
     name: "Marcus Chen",
@@ -128,7 +129,7 @@ const characters: Character[] = [
 
 export default function Home() {
   return (
-    <div className="container mx-auto px-4 py-8">
+    <Container>
       <div className="flex flex-col gap-6">
         <div>
           <h1 className="text-3xl font-bold text-center tracking-tight">
@@ -154,6 +155,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
