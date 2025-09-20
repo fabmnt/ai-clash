@@ -1,4 +1,9 @@
-import { AtSignIcon, MessageCircleIcon } from "lucide-react";
+import {
+  AtSignIcon,
+  HeartPlusIcon,
+  MessageCirclePlusIcon,
+  MessagesSquareIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,17 +29,31 @@ export function CharacterCard({ character }: CharacterCardProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="text-sm text-muted-foreground">{character.description}</p>
-        <div className="mt-3 text-xs text-muted-foreground">
-          <p>Model: {character.model}</p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" size="icon">
-            <AtSignIcon />
-          </Button>
-          <Button variant="outline" size="icon">
-            <MessageCircleIcon />
-          </Button>
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-muted-foreground">
+            {character.description}
+          </p>
+          <div className="mt-3 text-xs text-muted-foreground">
+            <p>Model: {character.model}</p>
+          </div>
+          <div className="flex justify-between">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="icon">
+                <MessagesSquareIcon />
+              </Button>
+              <Button variant="outline" size="icon">
+                <MessageCirclePlusIcon />
+              </Button>
+              <Button variant="outline" size="icon">
+                <AtSignIcon />
+              </Button>
+            </div>
+            <div>
+              <Button>
+                <HeartPlusIcon />
+              </Button>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
