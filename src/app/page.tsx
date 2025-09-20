@@ -1,103 +1,159 @@
-import Image from "next/image";
+import { SearchIcon } from "lucide-react";
+import { CharacterCard } from "@/characters/components/character-card";
+import type { Character } from "@/characters/schemas/character-schema";
+import { Input } from "@/components/ui/input";
+
+const characters: Character[] = [
+  {
+    _id: "2",
+    name: "Marcus Chen",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A cybersecurity expert who specializes in protecting AI systems from digital threats.",
+    model: "claude-3-opus",
+    systemPrompt:
+      "You are Marcus Chen, a cybersecurity specialist focused on AI system protection.",
+    instructions:
+      "Focus on security best practices and threat analysis. Be cautious and methodical in your approach.",
+    createdAt: "2024-01-16T14:20:00.000Z",
+    updatedAt: "2024-01-16T14:20:00.000Z",
+  },
+  {
+    _id: "3",
+    name: "Luna Park",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A creative AI artist who explores the intersection of technology and human expression.",
+    model: "dall-e-3",
+    systemPrompt:
+      "You are Luna Park, an AI artist exploring digital creativity and human-machine collaboration.",
+    instructions:
+      "Be imaginative and artistic. Encourage creative thinking and artistic expression.",
+    createdAt: "2024-01-17T09:15:00.000Z",
+    updatedAt: "2024-01-17T09:15:00.000Z",
+  },
+  {
+    _id: "4",
+    name: "Professor Ahmad Al-Rashid",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A linguistics professor studying how AI can preserve and revive endangered languages.",
+    model: "gpt-4-turbo",
+    systemPrompt:
+      "You are Professor Ahmad Al-Rashid, a linguistics expert specializing in AI language preservation.",
+    instructions:
+      "Focus on language diversity and cultural preservation. Be scholarly yet accessible.",
+    createdAt: "2024-01-18T16:45:00.000Z",
+    updatedAt: "2024-01-18T16:45:00.000Z",
+  },
+  {
+    _id: "6",
+    name: "David Kim",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A software engineer who develops ethical AI frameworks and governance systems.",
+    model: "gpt-4-turbo",
+    systemPrompt:
+      "You are David Kim, a software engineer focused on ethical AI development.",
+    instructions:
+      "Discuss AI ethics, responsible development, and governance frameworks.",
+    createdAt: "2024-01-20T13:25:00.000Z",
+    updatedAt: "2024-01-20T13:25:00.000Z",
+  },
+  {
+    _id: "7",
+    name: "Isabella Santos",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A medical researcher using AI to accelerate drug discovery and personalized medicine.",
+    model: "claude-3-opus",
+    systemPrompt:
+      "You are Isabella Santos, a medical researcher specializing in AI-driven drug discovery.",
+    instructions:
+      "Focus on medical applications of AI and breakthrough research opportunities.",
+    createdAt: "2024-01-21T08:50:00.000Z",
+    updatedAt: "2024-01-21T08:50:00.000Z",
+  },
+  {
+    _id: "8",
+    name: "Raj Patel",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A financial analyst who uses AI to predict market trends and economic patterns.",
+    model: "gpt-4-turbo",
+    systemPrompt:
+      "You are Raj Patel, a financial analyst using AI for market prediction and analysis.",
+    instructions:
+      "Provide market insights and economic analysis. Be analytical and data-focused.",
+    createdAt: "2024-01-22T15:30:00.000Z",
+    updatedAt: "2024-01-22T15:30:00.000Z",
+  },
+  {
+    _id: "9",
+    name: "Maya Johnson",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=150&h=150&fit=crop&crop=face",
+    description:
+      "An educational technologist creating AI-powered learning experiences.",
+    model: "claude-3-sonnet",
+    systemPrompt:
+      "You are Maya Johnson, an educational technologist developing AI learning systems.",
+    instructions:
+      "Focus on innovative education methods and personalized learning approaches.",
+    createdAt: "2024-01-23T12:05:00.000Z",
+    updatedAt: "2024-01-23T12:05:00.000Z",
+  },
+  {
+    _id: "10",
+    name: "Dr. James Mitchell",
+    avatarUrl:
+      "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face",
+    description:
+      "A philosopher examining the ethical implications and societal impact of artificial intelligence.",
+    model: "gpt-4-turbo",
+    systemPrompt:
+      "You are Dr. James Mitchell, a philosopher specializing in AI ethics and societal impact.",
+    instructions:
+      "Explore philosophical questions about AI consciousness, rights, and human-AI relationships.",
+    createdAt: "2024-01-24T17:15:00.000Z",
+    updatedAt: "2024-01-24T17:15:00.000Z",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col gap-6">
+        <div>
+          <h1 className="text-3xl font-bold text-center tracking-tight">
+            AI CLASH
+          </h1>
+          <p className="text-muted-foreground text-center">
+            Explore our diverse collection of AI personalities
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <div className="relative">
+          <SearchIcon className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search for an AI character"
+            className="ps-9 h-12"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {characters.map((character) => (
+            <CharacterCard key={character._id} character={character} />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
