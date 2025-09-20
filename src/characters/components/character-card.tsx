@@ -26,7 +26,9 @@ export function CharacterCard({ character }: CharacterCardProps) {
             height={48}
             className="w-12 h-12 rounded-full object-cover"
           />
-          <CardTitle className="text-lg">{character.name}</CardTitle>
+          <CardTitle className="text-lg text-balance line-clamp-2">
+            {character.name}
+          </CardTitle>
         </div>
       </CardHeader>
       <CardContent>
@@ -34,7 +36,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
           <p className="text-sm text-muted-foreground">
             {character.description}
           </p>
-          <div className="mt-3 text-xs text-muted-foreground">
+          <div className="text-xs text-muted-foreground">
             <p>Model: {character.model}</p>
           </div>
           <div className="flex justify-between">
