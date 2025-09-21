@@ -1,11 +1,8 @@
 import Link from "next/link";
-import { characters } from "@/app/page";
 import { Container } from "@/components/container";
 
 export default async function ChatPage(props: PageProps<"/chat/[id]">) {
-  const { id } = await props.params;
-
-  const character = characters.find((character) => character._id === id);
+  await props.params;
 
   return (
     <div className="flex h-full">
@@ -22,7 +19,7 @@ export default async function ChatPage(props: PageProps<"/chat/[id]">) {
       <div className="flex-1">
         <header className="bg-foreground/10">
           <Container>
-            <h1>{character?.name}</h1>
+            <h1>Chat</h1>
           </Container>
         </header>
         <div>

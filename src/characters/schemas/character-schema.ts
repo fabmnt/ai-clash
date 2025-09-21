@@ -8,8 +8,7 @@ export const CharacterSchema = z.object({
   model: z.string(),
   systemPrompt: z.string(),
   instructions: z.string(),
-  createdAt: z.iso.datetime(),
-  updatedAt: z.iso.datetime(),
+  _creationTime: z.number(),
 });
 
 export type Character = z.infer<typeof CharacterSchema>;
