@@ -17,7 +17,7 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
   const character = useQuery(api.characters.getCharacter, { characterId });
 
   return (
-    <Container className="py-4 bg-sidebar">
+    <Container className="py-4 bg-sidebar border-b border-sidebar-border">
       <header className="flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="sm" asChild>
