@@ -24,6 +24,12 @@ import {
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
 import { Response } from "@/components/ai-elements/response";
+import {
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
+} from "@/components/ai-elements/sources";
 
 type ChatProps = {
   characterId: Id<"characters">;
@@ -32,7 +38,7 @@ type ChatProps = {
 export function Chat({ characterId }: ChatProps) {
   const [input, setInput] = useState("");
   const character = useQuery(api.characters.getCharacter, { characterId });
-  const { messages, sendMessage, status } = useChat();
+  const { messages, sendMessage, status, regenerate } = useChat();
 
   const handleSubmit = (message: PromptInputMessage) => {
     sendMessage({ text: message.text ?? "" });
@@ -44,55 +50,84 @@ export function Chat({ characterId }: ChatProps) {
       <div className="h-full flex-1 overflow-y-auto space-y-4">
         <Conversation className="h-full">
           <ConversationContent>
-            {messages.map((message) =>
-              message.parts.map((part, i) => {
-                switch (part.type) {
-                  case "text":
-                    return (
-                      <Fragment key={`${message.id}-${i}`}>
-                        <Message from={message.role}>
-                          <MessageContent>
-                            <Response>{part.text}</Response>
-                          </MessageContent>
-                        </Message>
-                        {message.role === "assistant" &&
-                          i === messages.length - 1 && (
-                            <Actions className="mt-2">
-                              <Action label="Retry">
-                                <RefreshCcwIcon className="size-3" />
-                              </Action>
-                              <Action
-                                onClick={() =>
-                                  navigator.clipboard.writeText(part.text)
-                                }
-                                label="Copy"
-                              >
-                                <CopyIcon className="size-3" />
-                              </Action>
-                            </Actions>
-                          )}
-                      </Fragment>
-                    );
-                  case "reasoning":
-                    return (
-                      <Reasoning
-                        key={`${message.id}-${i}`}
-                        className="w-full"
-                        isStreaming={
-                          status === "streaming" &&
-                          i === message.parts.length - 1 &&
-                          message.id === messages.at(-1)?.id
+            {messages.map((message) => (
+              <div key={message.id}>
+                {message.role === "assistant" &&
+                  message.parts.filter((part) => part.type === "source-url")
+                    .length > 0 && (
+                    <Sources>
+                      <SourcesTrigger
+                        count={
+                          message.parts.filter(
+                            (part) => part.type === "source-url",
+                          ).length
                         }
-                      >
-                        <ReasoningTrigger />
-                        <ReasoningContent>{part.text}</ReasoningContent>
-                      </Reasoning>
-                    );
-                  default:
-                    return null;
-                }
-              }),
-            )}
+                      />
+                      {message.parts
+                        .filter((part) => part.type === "source-url")
+                        .map((part, i) => (
+                          <SourcesContent key={`${message.id}-${i}`}>
+                            <Source
+                              key={`${message.id}-${i}`}
+                              href={part.url}
+                              title={part.url}
+                            />
+                          </SourcesContent>
+                        ))}
+                    </Sources>
+                  )}
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case "text":
+                      return (
+                        <Fragment key={`${message.id}-${i}`}>
+                          <Message from={message.role}>
+                            <MessageContent>
+                              <Response>{part.text}</Response>
+                            </MessageContent>
+                          </Message>
+                          {message.role === "assistant" &&
+                            i === messages.length - 1 && (
+                              <Actions className="mt-2">
+                                <Action
+                                  label="Retry"
+                                  onClick={() => regenerate()}
+                                >
+                                  <RefreshCcwIcon className="size-3" />
+                                </Action>
+                                <Action
+                                  onClick={() =>
+                                    navigator.clipboard.writeText(part.text)
+                                  }
+                                  label="Copy"
+                                >
+                                  <CopyIcon className="size-3" />
+                                </Action>
+                              </Actions>
+                            )}
+                        </Fragment>
+                      );
+                    case "reasoning":
+                      return (
+                        <Reasoning
+                          key={`${message.id}-${i}`}
+                          className="w-full"
+                          isStreaming={
+                            status === "streaming" &&
+                            i === message.parts.length - 1 &&
+                            message.id === messages.at(-1)?.id
+                          }
+                        >
+                          <ReasoningTrigger />
+                          <ReasoningContent>{part.text}</ReasoningContent>
+                        </Reasoning>
+                      );
+                    default:
+                      return null;
+                  }
+                })}
+              </div>
+            ))}
           </ConversationContent>
         </Conversation>
       </div>
