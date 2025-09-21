@@ -1,7 +1,7 @@
 import { SearchIcon } from "lucide-react";
-import { CharactersGrid } from "@/characters/components/characters-grid";
 import { Container } from "@/components/container";
 import { Input } from "@/components/ui/input";
+import { CharactersGrid } from "@/features/characters/components/characters-grid";
 
 export default function Home() {
   return (
