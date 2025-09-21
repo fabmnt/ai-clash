@@ -10,7 +10,7 @@ export default async function ChatPage(props: PageProps<"/chat/[id]">) {
     <div className="flex h-full">
       <div className="flex-1 flex flex-col">
         <ChatHeader characterId={id as Id<"characters">} />
-        <Container className="h-full">
+        <Container className="h-full max-w-4xl mx-auto">
           <Chat characterId={id as Id<"characters">} />
         </Container>
       </div>

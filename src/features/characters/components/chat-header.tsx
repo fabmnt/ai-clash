@@ -17,8 +17,8 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
   const character = useQuery(api.characters.getCharacter, { characterId });
 
   return (
-    <Container className="py-4 bg-sidebar border-b border-sidebar-border">
-      <header className="flex items-center justify-between">
+    <header className="py-4 bg-sidebar border-b border-sidebar-border">
+      <Container className="flex items-center justify-between max-w-4xl mx-auto">
         <div className="flex items-center gap-6">
           <Button variant="ghost" size="sm" asChild>
             <Link href="/">
@@ -37,7 +37,7 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h2 className="text-lg font-semibold tracking-tight">
+              <h2 className="font-semibold tracking-tight">
                 {character?.name ?? "ME"}
               </h2>
             </div>
@@ -48,7 +48,7 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
             <EllipsisVerticalIcon />
           </Button>
         </div>
-      </header>
-    </Container>
+      </Container>
+    </header>
   );
 }

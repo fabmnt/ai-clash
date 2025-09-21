@@ -6,7 +6,9 @@ import type { Id } from "#/convex/_generated/dataModel";
 import {
   PromptInput,
   PromptInputBody,
+  PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputToolbar,
 } from "@/components/ai-elements/prompt-input";
 
 type ChatProps = {
@@ -23,6 +25,9 @@ export function Chat({ characterId }: ChatProps) {
         <PromptInputBody>
           <PromptInputTextarea />
         </PromptInputBody>
+        <PromptInputToolbar className="flex justify-end">
+          <PromptInputSubmit />
+        </PromptInputToolbar>
       </PromptInput>
     </div>
   );
