@@ -23,7 +23,7 @@ export function Chat({ characterId }: ChatProps) {
       <div className="h-full flex-1 overflow-y-auto space-y-4"></div>
       <PromptInput onSubmit={() => {}}>
         <PromptInputBody>
-          <PromptInputTextarea />
+          <PromptInputTextarea placeholder={`Talk to ${character?.name}...`} />
         </PromptInputBody>
         <PromptInputToolbar className="flex justify-end">
           <PromptInputSubmit />
