@@ -1,8 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { ArrowLeftIcon, EllipsisVerticalIcon } from "lucide-react";
-import Link from "next/link";
+import { EllipsisVerticalIcon } from "lucide-react";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Container } from "@/components/container";
@@ -18,35 +17,44 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
 
   return (
     <header className="py-4 bg-sidebar border-b border-sidebar-border">
-      <Container className="flex items-center justify-between max-w-4xl mx-auto">
-        <div className="flex items-center gap-6">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeftIcon className="size-4" />
-              Back
-            </Link>
-          </Button>
-          <div className="flex items-center gap-3">
-            <Avatar>
-              <AvatarImage
-                src={character?.avatarUrl ?? ""}
-                alt={character?.name ?? ""}
-              />
-              <AvatarFallback>
-                {character?.name?.slice(0, 2) ?? "ME"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h2 className="font-semibold tracking-tight">
-                {character?.name ?? "ME"}
-              </h2>
+      <Container className="max-w-4xl mx-auto space-y-2">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            {/*             <Button variant="ghost" size="sm" asChild>
+              <Link href="/">
+                <ArrowLeftIcon className="size-4" />
+                Back
+              </Link>
+            </Button> */}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage
+                    src={character?.avatarUrl ?? ""}
+                    alt={character?.name ?? ""}
+                  />
+                  <AvatarFallback>
+                    {character?.name?.slice(0, 2) ?? "ME"}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="font-semibold tracking-tight">
+                    {character?.name ?? "ME"}
+                  </h2>
+                </div>
+              </div>
             </div>
+          </div>
+          <div>
+            <Button variant="ghost" size="sm">
+              <EllipsisVerticalIcon />
+            </Button>
           </div>
         </div>
         <div>
-          <Button variant="ghost" size="sm">
-            <EllipsisVerticalIcon />
-          </Button>
+          <p className="text-sm text-muted-foreground">
+            {character?.description ?? "ME"}
+          </p>
         </div>
       </Container>
     </header>
