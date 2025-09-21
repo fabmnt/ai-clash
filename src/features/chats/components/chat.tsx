@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { useQuery } from "convex/react";
 import { CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { Fragment, useState } from "react";
+import * as z from "zod";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Action, Actions } from "@/components/ai-elements/actions";
@@ -33,15 +34,24 @@ import {
 
 type ChatProps = {
   characterId: Id<"characters">;
+  chatId: Id<"chats">;
 };
 
-export function Chat({ characterId }: ChatProps) {
+export function Chat({ characterId, chatId }: ChatProps) {
   const [input, setInput] = useState("");
   const character = useQuery(api.characters.getCharacter, { characterId });
-  const { messages, sendMessage, status, regenerate } = useChat();
+  const { messages, sendMessage, status, regenerate } = useChat({
+    messageMetadataSchema: z.object({
+      chatId: z.string(),
+      characterId: z.string(),
+    }),
+  });
 
   const handleSubmit = (message: PromptInputMessage) => {
-    sendMessage({ text: message.text ?? "" });
+    sendMessage({
+      text: message.text ?? "",
+      metadata: { chatId, characterId },
+    });
     setInput("");
   };
 
