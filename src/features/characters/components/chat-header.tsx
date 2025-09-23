@@ -48,19 +48,27 @@ export function ChatHeader({ characterId, chatId }: ChatHeaderProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              {participants?.map((participant) => (
-                <Avatar key={participant._id}>
-                  <AvatarImage
-                    src={participant.avatarUrl}
-                    alt={participant.name}
-                  />
-                  <AvatarFallback>
-                    {participant.name?.slice(0, 2) ?? "?"}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
-            </div>
+            <Button variant="ghost">
+              <span className="text-sm text-muted-foreground">
+                Participants:
+              </span>
+              <div className="flex items-center">
+                {participants?.map((participant, i) => (
+                  <Avatar
+                    key={participant._id}
+                    className={`relative left-${(i + 1) * 2} last:left-0`}
+                  >
+                    <AvatarImage
+                      src={participant.avatarUrl}
+                      alt={participant.name}
+                    />
+                    <AvatarFallback>
+                      {participant.name?.slice(0, 2) ?? "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                ))}
+              </div>
+            </Button>
             <Button variant="ghost" size="sm">
               <EllipsisVerticalIcon />
             </Button>
