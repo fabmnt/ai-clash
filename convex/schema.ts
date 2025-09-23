@@ -13,6 +13,7 @@ export default defineSchema({
   }),
   chats: defineTable({
     host: v.id("characters"),
+    participants: v.optional(v.array(v.id("characters"))),
   }),
   messages: defineTable({
     chatId: v.id("chats"),

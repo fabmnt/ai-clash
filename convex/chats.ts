@@ -30,3 +30,77 @@ export const getChat = query({
     };
   },
 });
+
+export const addParticipants = mutation({
+  args: {
+    chatId: v.id("chats"),
+    participants: v.array(v.id("characters")),
+  },
+  handler: async (ctx, args) => {
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+    const actualNewParticipants = args.participants.filter(
+      (participant) => !chat.participants?.includes(participant),
+    );
+
+    if (actualNewParticipants.length === 0) {
+      return [];
+    }
+
+    await ctx.db.patch(args.chatId, {
+      participants: [...(chat.participants ?? []), ...actualNewParticipants],
+    });
+
+    return actualNewParticipants;
+  },
+});
+
+export const removeParticipants = mutation({
+  args: {
+    chatId: v.id("chats"),
+    participants: v.array(v.id("characters")),
+  },
+  handler: async (ctx, args) => {
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+    const actualRemovedParticipants = args.participants.filter((participant) =>
+      chat.participants?.includes(participant),
+    );
+
+    if (actualRemovedParticipants.length === 0) {
+      return [];
+    }
+
+    await ctx.db.patch(args.chatId, {
+      participants: chat.participants?.filter((participant) =>
+        actualRemovedParticipants.includes(participant),
+      ),
+    });
+
+    return actualRemovedParticipants;
+  },
+});
+
+export const getParticipants = query({
+  args: {
+    chatId: v.id("chats"),
+  },
+  handler: async (ctx, args) => {
+    const chat = await ctx.db.get(args.chatId);
+    if (!chat) {
+      throw new Error("Chat not found");
+    }
+    const participantsPromises = chat.participants?.map((participantId) =>
+      ctx.db.get(participantId),
+    );
+    if (!participantsPromises) {
+      throw new Error("Participants not found");
+    }
+    const participants = await Promise.all(participantsPromises);
+    return participants;
+  },
+});
