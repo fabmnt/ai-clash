@@ -9,6 +9,7 @@ export default defineSchema({
     model: v.string(),
     systemPrompt: v.string(),
     instructions: v.string(),
+    uniqueName: v.string(),
   }),
   chats: defineTable({
     host: v.id("characters"),
