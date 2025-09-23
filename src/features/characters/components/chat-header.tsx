@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 
 type ChatHeaderProps = {
   characterId: Id<"characters">;
+  chatId: Id<"chats">;
 };
 
-export function ChatHeader({ characterId }: ChatHeaderProps) {
+export function ChatHeader({ characterId, chatId }: ChatHeaderProps) {
+  const participants = useQuery(api.chats.getParticipants, { chatId });
   const character = useQuery(api.characters.getCharacter, { characterId });
 
   return (
@@ -45,7 +47,20 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
               </div>
             </div>
           </div>
-          <div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              {participants?.map((participant) => (
+                <Avatar key={participant._id}>
+                  <AvatarImage
+                    src={participant.avatarUrl}
+                    alt={participant.name}
+                  />
+                  <AvatarFallback>
+                    {participant.name?.slice(0, 2) ?? "?"}
+                  </AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
             <Button variant="ghost" size="sm">
               <EllipsisVerticalIcon />
             </Button>

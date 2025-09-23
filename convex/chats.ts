@@ -39,7 +39,7 @@ export const addParticipants = mutation({
   handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      return [];
     }
     const actualNewParticipants = args.participants.filter(
       (participant) => !chat.participants?.includes(participant),
@@ -65,7 +65,7 @@ export const removeParticipants = mutation({
   handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      return [];
     }
     const actualRemovedParticipants = args.participants.filter((participant) =>
       chat.participants?.includes(participant),
@@ -92,15 +92,15 @@ export const getParticipants = query({
   handler: async (ctx, args) => {
     const chat = await ctx.db.get(args.chatId);
     if (!chat) {
-      throw new Error("Chat not found");
+      return [];
     }
     const participantsPromises = chat.participants?.map((participantId) =>
       ctx.db.get(participantId),
     );
     if (!participantsPromises) {
-      throw new Error("Participants not found");
+      return [];
     }
     const participants = await Promise.all(participantsPromises);
-    return participants;
+    return participants.filter((participant) => participant !== null);
   },
 });

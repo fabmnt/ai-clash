@@ -22,7 +22,10 @@ export default async function ChatPage(
   return (
     <div className="flex h-full">
       <div className="flex-1 flex flex-col">
-        <ChatHeader characterId={characterId as Id<"characters">} />
+        <ChatHeader
+          characterId={characterId as Id<"characters">}
+          chatId={chatId as Id<"chats">}
+        />
         <Container className="h-full max-w-4xl mx-auto">
           <Chat
             characterId={characterId as Id<"characters">}
