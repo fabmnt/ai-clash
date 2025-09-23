@@ -7,6 +7,7 @@ import type { Id } from "#/convex/_generated/dataModel";
 import { Container } from "@/components/container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { ParticipantsDialog } from "@/features/chats/components/participants-dialog";
 
 type ChatHeaderProps = {
   characterId: Id<"characters">;
@@ -48,27 +49,7 @@ export function ChatHeader({ characterId, chatId }: ChatHeaderProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="ghost">
-              <span className="text-sm text-muted-foreground">
-                Participants:
-              </span>
-              <div className="flex items-center">
-                {participants?.map((participant, i) => (
-                  <Avatar
-                    key={participant._id}
-                    className={`relative left-${(i + 1) * 2} last:left-0`}
-                  >
-                    <AvatarImage
-                      src={participant.avatarUrl}
-                      alt={participant.name}
-                    />
-                    <AvatarFallback>
-                      {participant.name?.slice(0, 2) ?? "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                ))}
-              </div>
-            </Button>
+            <ParticipantsDialog participants={participants ?? []} />
             <Button variant="ghost" size="sm">
               <EllipsisVerticalIcon />
             </Button>
