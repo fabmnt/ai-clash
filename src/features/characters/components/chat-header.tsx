@@ -16,7 +16,7 @@ export function ChatHeader({ characterId }: ChatHeaderProps) {
   const character = useQuery(api.characters.getCharacter, { characterId });
 
   return (
-    <header className="py-4 bg-sidebar border-b border-sidebar-border">
+    <header className="py-4 bg-sidebar border-b border-sidebar-border sticky top-0 z-10">
       <Container className="max-w-4xl mx-auto space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">

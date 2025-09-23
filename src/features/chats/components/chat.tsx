@@ -73,7 +73,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="h-full flex-1 overflow-y-auto space-y-4">
+      <div className="flex-1 space-y-4">
         <Conversation className="h-full">
           <ConversationContent>
             {messages.map((message) => (
