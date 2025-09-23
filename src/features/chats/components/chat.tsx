@@ -1,10 +1,10 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQuery } from "convex/react";
 import { CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { Fragment, useState } from "react";
-import * as z from "zod";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Action, Actions } from "@/components/ai-elements/actions";
@@ -35,23 +35,39 @@ import {
 type ChatProps = {
   characterId: Id<"characters">;
   chatId: Id<"chats">;
+  initialMessages: UIMessage[];
 };
 
-export function Chat({ characterId, chatId }: ChatProps) {
+export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
   const character = useQuery(api.characters.getCharacter, { characterId });
   const { messages, sendMessage, status, regenerate } = useChat({
-    messageMetadataSchema: z.object({
-      chatId: z.string(),
-      characterId: z.string(),
+    messages: initialMessages,
+    transport: new DefaultChatTransport({
+      prepareSendMessagesRequest: ({ id, messages, body }) => {
+        return {
+          body: {
+            ...body,
+            id,
+            message: messages[messages.length - 1],
+          },
+        };
+      },
     }),
   });
 
   const handleSubmit = (message: PromptInputMessage) => {
-    sendMessage({
-      text: message.text ?? "",
-      metadata: { chatId, characterId },
-    });
+    sendMessage(
+      {
+        text: message.text ?? "",
+      },
+      {
+        body: {
+          chatId,
+          characterId,
+        },
+      },
+    );
     setInput("");
   };
 

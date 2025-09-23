@@ -1,3 +1,5 @@
+import { fetchQuery } from "convex/nextjs";
+import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Container } from "@/components/container";
 import { ChatHeader } from "@/features/characters/components/chat-header";
@@ -7,6 +9,15 @@ export default async function ChatPage(
   props: PageProps<"/chat/[characterId]/[chatId]">,
 ) {
   const { characterId, chatId } = await props.params;
+  const messages = await fetchQuery(api.messages.getMessages, {
+    chatId: chatId as Id<"chats">,
+  });
+
+  const initialMessages = messages.map((message) => ({
+    role: message.role as "system" | "user" | "assistant",
+    id: message._id,
+    parts: [{ type: "text" as const, text: message.content }],
+  }));
 
   return (
     <div className="flex h-full">
@@ -16,6 +27,7 @@ export default async function ChatPage(
           <Chat
             characterId={characterId as Id<"characters">}
             chatId={chatId as Id<"chats">}
+            initialMessages={initialMessages}
           />
         </Container>
       </div>
