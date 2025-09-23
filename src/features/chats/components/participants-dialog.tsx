@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2Icon, UserPlusIcon } from "lucide-react";
+import { PlusIcon, Trash2Icon, UserPlusIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,25 +29,36 @@ export function ParticipantsDialog({ participants }: ParticipantsDialogProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="ghost">
-          <span className="text-sm text-muted-foreground">Participants:</span>
-          <div className="flex items-center">
-            {participants?.map((participant, index) => {
-              const key = participant._id ?? participant.id ?? `${index}`;
-              const initials = participant?.name?.slice(0, 2) ?? "?";
-              return (
-                <Avatar
-                  key={key}
-                  className={`relative left-${(index + 1) * 2} last:left-0`}
-                >
-                  <AvatarImage
-                    src={participant?.avatarUrl ?? undefined}
-                    alt={participant?.name ?? ""}
-                  />
-                  <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
-              );
-            })}
-          </div>
+          {participants.length > 0 ? (
+            <>
+              <span className="text-sm text-muted-foreground">
+                Participants:
+              </span>
+              <div className="flex items-center">
+                {participants?.map((participant, index) => {
+                  const key = participant._id ?? participant.id ?? `${index}`;
+                  const initials = participant?.name?.slice(0, 2) ?? "?";
+                  return (
+                    <Avatar
+                      key={key}
+                      className={`relative left-${(index + 1) * 2} last:left-0`}
+                    >
+                      <AvatarImage
+                        src={participant?.avatarUrl ?? undefined}
+                        alt={participant?.name ?? ""}
+                      />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                  );
+                })}
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <span className="text-sm">Add participants</span>
+              <PlusIcon />
+            </div>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
@@ -60,7 +71,7 @@ export function ParticipantsDialog({ participants }: ParticipantsDialogProps) {
 
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Input placeholder="Enter user email or ID" />
+            <Input placeholder="Enter character name, unique name or ID" />
             <Button variant="ghost" type="button" className="shrink-0">
               <UserPlusIcon className="size-4" />
               Add

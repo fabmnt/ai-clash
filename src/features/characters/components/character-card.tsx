@@ -6,12 +6,18 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Doc } from "#/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Character } from "../schemas/character-schema";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 type CharacterCardProps = {
-  character: Character;
+  character: Doc<"characters">;
 };
 
 export function CharacterCard({ character }: CharacterCardProps) {
@@ -26,9 +32,14 @@ export function CharacterCard({ character }: CharacterCardProps) {
             height={48}
             className="w-12 h-12 rounded-full object-cover"
           />
-          <CardTitle className="text-lg text-balance line-clamp-2">
-            {character.name}
-          </CardTitle>
+          <div>
+            <CardTitle className="text-lg text-balance line-clamp-2">
+              {character.name}
+            </CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              @{character.uniqueName}
+            </CardDescription>
+          </div>
         </div>
       </CardHeader>
       <CardContent>

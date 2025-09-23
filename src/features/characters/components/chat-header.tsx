@@ -44,6 +44,9 @@ export function ChatHeader({ characterId, chatId }: ChatHeaderProps) {
                   <h2 className="font-semibold tracking-tight">
                     {character?.name ?? "ME"}
                   </h2>
+                  <p className="text-sm text-muted-foreground">
+                    @{character?.uniqueName ?? "ME"}
+                  </p>
                 </div>
               </div>
             </div>
