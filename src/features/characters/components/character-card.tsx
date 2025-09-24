@@ -1,6 +1,5 @@
 import {
   AtSignIcon,
-  HeartPlusIcon,
   MessageCirclePlusIcon,
   MessagesSquareIcon,
 } from "lucide-react";
@@ -65,11 +64,6 @@ export function CharacterCard({ character }: CharacterCardProps) {
                 <AtSignIcon />
               </Button>
               <UpdateCharacterDialog character={character} />
-            </div>
-            <div>
-              <Button>
-                <HeartPlusIcon />
-              </Button>
             </div>
           </div>
         </div>
