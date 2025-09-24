@@ -118,3 +118,12 @@ export const getParticipants = query({
     return participants.filter((participant) => participant !== null);
   },
 });
+
+export const deleteChat = mutation({
+  args: {
+    chatId: v.id("chats"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.chatId);
+  },
+});

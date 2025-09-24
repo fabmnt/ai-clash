@@ -9,7 +9,7 @@ export default async function ChatLayout(
 
   return (
     <div className="flex h-full">
-      <aside className="px-2 py-6 h-full bg-sidebar border-r border-sidebar-border">
+      <aside className="w-44 px-2 py-6 h-full bg-sidebar border-r border-sidebar-border">
         <ChatList characterId={characterId as Id<"characters">} />
       </aside>
       <div className="flex-1">{children}</div>

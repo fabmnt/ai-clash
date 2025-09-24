@@ -1,12 +1,18 @@
 "use client";
 
-import { useQuery } from "convex/react";
-import { PlusIcon } from "lucide-react";
+import { useMutation, useQuery } from "convex/react";
+import { EllipsisVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
 interface ChatListProps {
@@ -17,6 +23,7 @@ export function ChatList({ characterId }: ChatListProps) {
   const characterChats = useQuery(api.chats.getCharacterChats, {
     characterId,
   });
+  const deleteChat = useMutation(api.chats.deleteChat);
   const pathname = usePathname();
 
   // Check if we're on a specific chat page
@@ -29,7 +36,7 @@ export function ChatList({ characterId }: ChatListProps) {
 
   return (
     <div className="h-full space-y-4">
-      <h3 className="text-sm font-medium text-sidebar-foreground">Chats</h3>
+      <h3 className="text-sm font-medium text-muted-foreground">Chats</h3>
       <ul className="flex flex-col gap-2">
         <li>
           <Button
@@ -44,15 +51,20 @@ export function ChatList({ characterId }: ChatListProps) {
           </Button>
         </li>
         {characterChats?.map((chat) => (
-          <li key={chat._id}>
+          <li
+            key={chat._id}
+            className={cn(
+              "relative hover:bg-accent/50 rounded-md text-foreground flex h-9",
+              isActiveChat(chat._id) && "bg-accent/50",
+            )}
+          >
             <Button
-              variant={isActiveChat(chat._id) ? "secondary" : "ghost"}
-              className="justify-start"
+              variant="ghost"
+              className="justify-start max-w-[25ch] flex-1 min-w-0 h-full font-normal text-muted-foreground bg-transparent hover:bg-transparent hover:text-foreground rounded-md"
               asChild
             >
               <Link
                 className={cn(
-                  "w-[20ch] truncate font-normal text-muted-foreground",
                   isActiveChat(chat._id) && "font-medium text-primary",
                 )}
                 href={`/chat/${characterId}/${chat._id}`}
@@ -60,6 +72,25 @@ export function ChatList({ characterId }: ChatListProps) {
                 {chat.title || "Untitled chat"}
               </Link>
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="flex shrink-0 text-muted-foreground"
+                >
+                  <EllipsisVerticalIcon className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => deleteChat({ chatId: chat._id })}
+                >
+                  <TrashIcon className="size-4" />
+                  Delete chat
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </li>
         ))}
       </ul>
