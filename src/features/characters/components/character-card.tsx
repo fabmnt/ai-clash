@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { UpdateCharacterDialog } from "@/features/characters/components/update-character-dialog";
 
 type CharacterCardProps = {
   character: Doc<"characters">;
@@ -63,6 +64,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
               <Button variant="outline" size="icon">
                 <AtSignIcon />
               </Button>
+              <UpdateCharacterDialog character={character} />
             </div>
             <div>
               <Button>

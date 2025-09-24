@@ -58,7 +58,7 @@ export async function POST(req: Request) {
   if (!participants.includes(characterId as Id<"characters">)) {
     return new Response("Unauthorized", { status: 401 });
   }
-
+  console.log({ character });
   const result = streamText({
     model: openrouter(model),
     messages: convertToModelMessages([...messages, message]),

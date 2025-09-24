@@ -59,3 +59,33 @@ export const createCharacter = mutation({
     return character;
   },
 });
+
+export const updateCharacter = mutation({
+  args: {
+    character: v.object({
+      id: v.id("characters"),
+      name: v.string(),
+      avatarUrl: v.string(),
+      description: v.string(),
+      model: v.string(),
+      systemPrompt: v.string(),
+      instructions: v.string(),
+      uniqueName: v.string(),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const existingCharacter = await ctx.db
+      .query("characters")
+      .withIndex("unique_name", (q) =>
+        q.eq("uniqueName", args.character.uniqueName),
+      )
+      .unique();
+
+    if (existingCharacter && existingCharacter._id !== args.character.id) {
+      return null;
+    }
+
+    const character = await ctx.db.patch(args.character.id, args.character);
+    return character;
+  },
+});
