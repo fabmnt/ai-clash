@@ -270,7 +270,6 @@ export function UpdateCharacterDialog({
                 value={formValues.description}
                 onChange={handleFieldChange("description")}
                 placeholder="A tactically minded AI guide who excels at breaking down complex decisions."
-                required
                 disabled={isSubmitting}
                 rows={3}
               />
@@ -288,12 +287,11 @@ export function UpdateCharacterDialog({
                 value={formValues.systemPrompt}
                 onChange={handleFieldChange("systemPrompt")}
                 placeholder="You are Sophia, an AI strategist who thinks three moves ahead and communicates with clarity and warmth."
-                required
                 disabled={isSubmitting}
                 rows={4}
               />
             </div>
-
+            {/* 
             <div className="grid gap-2">
               <label
                 htmlFor="edit-character-instructions"
@@ -306,11 +304,10 @@ export function UpdateCharacterDialog({
                 value={formValues.instructions}
                 onChange={handleFieldChange("instructions")}
                 placeholder="Stay concise, offer two actionable options, and close with a motivational insight."
-                required
                 disabled={isSubmitting}
                 rows={4}
               />
-            </div>
+            </div> */}
 
             {error ? (
               <p className="text-sm text-destructive" role="alert">

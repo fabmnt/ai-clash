@@ -233,7 +233,6 @@ export function CreateCharacterDialog() {
                 value={formValues.description}
                 onChange={handleFieldChange("description")}
                 placeholder="A tactically minded AI guide who excels at breaking down complex decisions."
-                required
                 disabled={isSubmitting}
                 rows={3}
               />
@@ -251,7 +250,6 @@ export function CreateCharacterDialog() {
                 value={formValues.systemPrompt}
                 onChange={handleFieldChange("systemPrompt")}
                 placeholder="You are Sophia, an AI strategist who thinks three moves ahead and communicates with clarity and warmth."
-                required
                 disabled={isSubmitting}
                 rows={4}
               />
