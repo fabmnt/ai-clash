@@ -52,7 +52,10 @@ export function ChatHeader({ characterId, chatId }: ChatHeaderProps) {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <ParticipantsDialog participants={participants ?? []} />
+            <ParticipantsDialog
+              participants={participants ?? []}
+              chatId={chatId}
+            />
             <Button variant="ghost" size="sm">
               <EllipsisVerticalIcon />
             </Button>

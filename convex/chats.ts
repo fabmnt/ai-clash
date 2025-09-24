@@ -85,21 +85,13 @@ export const removeParticipants = mutation({
     if (!chat) {
       return [];
     }
-    const actualRemovedParticipants = args.participants.filter((participant) =>
-      chat.participants?.includes(participant),
+    const updatedParticipants = chat.participants?.filter(
+      (participant) => !args.participants.includes(participant),
     );
 
-    if (actualRemovedParticipants.length === 0) {
-      return [];
-    }
-
-    await ctx.db.patch(args.chatId, {
-      participants: chat.participants?.filter((participant) =>
-        actualRemovedParticipants.includes(participant),
-      ),
+    return await ctx.db.patch(args.chatId, {
+      participants: updatedParticipants,
     });
-
-    return actualRemovedParticipants;
   },
 });
 

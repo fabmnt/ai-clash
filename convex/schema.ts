@@ -10,6 +10,8 @@ export default defineSchema({
     systemPrompt: v.string(),
     instructions: v.string(),
     uniqueName: v.string(),
+  }).searchIndex("search_participants", {
+    searchField: "name",
   }),
   chats: defineTable({
     title: v.optional(v.string()),
