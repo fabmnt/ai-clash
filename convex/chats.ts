@@ -31,6 +31,20 @@ export const getChat = query({
   },
 });
 
+export const getCharacterChats = query({
+  args: {
+    characterId: v.id("characters"),
+  },
+  handler: async (ctx, args) => {
+    const chats = await ctx.db
+      .query("chats")
+      .filter((q) => q.eq(q.field("host"), args.characterId))
+      .collect();
+
+    return chats;
+  },
+});
+
 export const addParticipants = mutation({
   args: {
     chatId: v.id("chats"),
