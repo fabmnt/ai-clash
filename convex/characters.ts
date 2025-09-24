@@ -62,8 +62,8 @@ export const createCharacter = mutation({
 
 export const updateCharacter = mutation({
   args: {
+    id: v.id("characters"),
     character: v.object({
-      id: v.id("characters"),
       name: v.string(),
       avatarUrl: v.string(),
       description: v.string(),
@@ -81,11 +81,11 @@ export const updateCharacter = mutation({
       )
       .unique();
 
-    if (existingCharacter && existingCharacter._id !== args.character.id) {
+    if (existingCharacter && existingCharacter._id !== args.id) {
       return null;
     }
 
-    const character = await ctx.db.patch(args.character.id, args.character);
+    const character = await ctx.db.patch(args.id, args.character);
     return character;
   },
 });

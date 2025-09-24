@@ -142,8 +142,8 @@ export function UpdateCharacterDialog({
 
     try {
       const result = await updateCharacter({
+        id: character._id,
         character: {
-          id: character._id,
           ...payload,
         },
       });
