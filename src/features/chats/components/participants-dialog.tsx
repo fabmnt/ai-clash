@@ -38,7 +38,6 @@ export function ParticipantsDialog({
     query: trimmedSearch,
   });
   const characterResults = characters ?? [];
-  const hasResults = characterResults.length > 0;
   const inputRef = useRef<HTMLInputElement>(null);
   const addParticipants = useMutation(api.chats.addParticipants);
   const removeParticipants = useMutation(api.chats.removeParticipants);
