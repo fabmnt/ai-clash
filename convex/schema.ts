@@ -10,9 +10,13 @@ export default defineSchema({
     systemPrompt: v.string(),
     instructions: v.string(),
     uniqueName: v.string(),
-  }).searchIndex("search_participants", {
-    searchField: "name",
-  }),
+  })
+    .searchIndex("search_participants", {
+      searchField: "name",
+    })
+    .index("unique_name", {
+      fields: ["uniqueName"],
+    }),
   chats: defineTable({
     title: v.optional(v.string()),
     host: v.id("characters"),
