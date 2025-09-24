@@ -50,6 +50,15 @@ export async function POST(req: Request) {
     `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
   );
 
+  const chat = await fetchQuery(api.chats.getChat, {
+    id: chatId as Id<"chats">,
+  });
+
+  const participants = [chat.host, ...(chat?.participants ?? [])];
+  if (!participants.includes(characterId as Id<"characters">)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const result = streamText({
     model: openrouter(model),
     messages: convertToModelMessages([...messages, message]),

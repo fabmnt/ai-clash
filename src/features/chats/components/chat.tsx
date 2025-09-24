@@ -174,6 +174,13 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                 })}
               </div>
             ))}
+            {status === "submitted" && (
+              <Message from="assistant">
+                <MessageContent>
+                  <Response>Loading...</Response>
+                </MessageContent>
+              </Message>
+            )}
           </ConversationContent>
         </Conversation>
       </div>
