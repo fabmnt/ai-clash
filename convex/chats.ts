@@ -41,7 +41,11 @@ export const getCharacterChats = query({
       .filter((q) => q.eq(q.field("host"), args.characterId))
       .collect();
 
-    return chats;
+    return chats.sort((a, b) => {
+      const aDate = a._creationTime;
+      const bDate = b._creationTime;
+      return bDate - aDate;
+    });
   },
 });
 
