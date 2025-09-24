@@ -141,17 +141,12 @@ export function UpdateCharacterDialog({
     };
 
     try {
-      const result = await updateCharacter({
+      await updateCharacter({
         id: character._id,
         character: {
           ...payload,
         },
       });
-
-      if (!result) {
-        setError("That unique handle is already taken. Try another one.");
-        return;
-      }
 
       handleOpenChange(false);
     } catch (submitError) {
