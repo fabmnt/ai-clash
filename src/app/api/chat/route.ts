@@ -74,8 +74,8 @@ export async function POST(req: Request) {
   console.log(
     `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
   );
+  const lang = "spanish";
   textPart.text = contentParticipantsReplaced;
-  console.log(textPart.text);
 
   const messages: UIMessage[] = dbMessages.map((message) => ({
     role: message.role as "system" | "user" | "assistant",
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
       },
     },
     messages: convertToModelMessages([...messages, message]),
-    system: character ? systemPrompt(character) : "",
+    system: character ? systemPrompt(character, lang) : "",
   });
 
   return result.toUIMessageStreamResponse({
