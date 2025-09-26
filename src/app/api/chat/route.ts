@@ -3,6 +3,7 @@ import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
+import { systemPrompt } from "@/config/prompts";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY!,
@@ -58,11 +59,11 @@ export async function POST(req: Request) {
   if (!participants.includes(characterId as Id<"characters">)) {
     return new Response("Unauthorized", { status: 401 });
   }
-  console.log({ character });
+
   const result = streamText({
     model: openrouter(model),
     messages: convertToModelMessages([...messages, message]),
-    system: character?.systemPrompt,
+    system: systemPrompt(character?.systemPrompt ?? ""),
   });
 
   return result.toUIMessageStreamResponse({
