@@ -174,6 +174,9 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     sendMessage(
       {
         text: message.text ?? "",
+        metadata: {
+          isParticipantRequest: false,
+        },
       },
       {
         body: {
