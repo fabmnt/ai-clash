@@ -40,10 +40,7 @@ type ChatProps = {
 
 export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
-  const characters = useQuery(api.characters.getCharacters);
   const character = useQuery(api.characters.getCharacter, { characterId });
-  const [selectedCharacter, setSelectedCharacter] =
-    useState<Id<"characters">>(characterId);
   const { messages, sendMessage, status, regenerate } = useChat({
     messages: initialMessages,
     transport: new DefaultChatTransport({
@@ -67,7 +64,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
       {
         body: {
           chatId,
-          characterId: selectedCharacter,
+          characterId,
         },
       },
     );
@@ -77,18 +74,6 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target.value;
     setInput(inputValue);
-
-    if (!inputValue.includes("@")) {
-      return;
-    }
-
-    const inputCharacterQuery = inputValue.split("@")[1].split(" ")[0];
-    const inputCharacter = characters?.find(
-      (character) => character.uniqueName === inputCharacterQuery,
-    );
-    if (inputCharacter) {
-      setSelectedCharacter(inputCharacter._id);
-    }
   };
 
   return (

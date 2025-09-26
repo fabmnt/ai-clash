@@ -35,6 +35,46 @@ export async function POST(req: Request) {
     characterId: characterId as Id<"characters">,
   });
 
+  const model = character?.model ?? "x-ai/grok-4-fast:free";
+  console.log(
+    `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
+  );
+
+  const participants = await fetchQuery(api.chats.getParticipants, {
+    chatId: chatId as Id<"chats">,
+  });
+
+  const textPart = message.parts.find((part) => part.type === "text");
+  if (textPart == null) {
+    return new Response("Bad request", {
+      status: 400,
+    });
+  }
+  const participantMentionRegex = /@(\w+)/g;
+  let contentParticipantsReplaced = textPart.text ?? "";
+  const contentParticipants = textPart.text.match(participantMentionRegex);
+  console.log({ contentParticipants });
+  if (contentParticipants) {
+    // replace all mentions with the participant's name and description
+    for (const contentParticipant of contentParticipants) {
+      const dbParticipant = participants.find(
+        (participant) =>
+          participant.uniqueName === contentParticipant.replace("@", ""),
+      );
+      if (!dbParticipant) {
+        continue;
+      }
+      contentParticipantsReplaced =
+        textPart.text.replaceAll(
+          contentParticipant,
+          `${dbParticipant.name} (${dbParticipant.description})`,
+        ) ?? "";
+    }
+  }
+
+  textPart.text = contentParticipantsReplaced;
+  console.log({ contentParticipantsReplaced });
+
   const messages: UIMessage[] = dbMessages.map((message) => ({
     role: message.role as "system" | "user" | "assistant",
     id: message._id,
@@ -45,20 +85,6 @@ export async function POST(req: Request) {
       },
     ],
   }));
-
-  const model = character?.model ?? "x-ai/grok-4-fast:free";
-  console.log(
-    `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
-  );
-
-  const chat = await fetchQuery(api.chats.getChat, {
-    id: chatId as Id<"chats">,
-  });
-
-  const participants = [chat.host, ...(chat?.participants ?? [])];
-  if (!participants.includes(characterId as Id<"characters">)) {
-    return new Response("Unauthorized", { status: 401 });
-  }
 
   const result = streamText({
     model: openrouter(model),
