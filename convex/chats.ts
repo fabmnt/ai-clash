@@ -121,5 +121,11 @@ export const deleteChat = mutation({
   },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.chatId);
+    const messages = await ctx.db
+      .query("messages")
+      .filter((q) => q.eq(q.field("chatId"), args.chatId))
+      .collect();
+
+    await Promise.all(messages.map((message) => ctx.db.delete(message._id)));
   },
 });

@@ -28,13 +28,15 @@ export default async function ChatPage(
           characterId={characterId as Id<"characters">}
           chatId={chatId as Id<"chats">}
         />
-        <Container className="h-full max-w-4xl mx-auto">
-          <Chat
-            characterId={characterId as Id<"characters">}
-            chatId={chatId as Id<"chats">}
-            initialMessages={initialMessages}
-          />
-        </Container>
+        <div className="flex-1 overflow-hidden">
+          <Container className="h-full max-w-4xl mx-auto">
+            <Chat
+              characterId={characterId as Id<"characters">}
+              chatId={chatId as Id<"chats">}
+              initialMessages={initialMessages}
+            />
+          </Container>
+        </div>
       </div>
     </div>
   );

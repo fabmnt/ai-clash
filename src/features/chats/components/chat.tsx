@@ -192,101 +192,99 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex-1 space-y-4">
-        <Conversation className="h-full">
-          <ConversationContent>
-            {enhancedMessages.map((message) => (
-              <div key={message.id}>
-                {message.role === "assistant" && (
-                  <SenderAvatar message={message} />
+    <div className="h-[720px] lg:h-[540px] overflow-y-auto flex flex-col">
+      <Conversation className="flex-1">
+        <ConversationContent>
+          {enhancedMessages.map((message) => (
+            <div key={message.id}>
+              {message.role === "assistant" && (
+                <SenderAvatar message={message} />
+              )}
+              {message.role === "assistant" &&
+                message.parts.filter((part) => part.type === "source-url")
+                  .length > 0 && (
+                  <Sources>
+                    <SourcesTrigger
+                      count={
+                        message.parts.filter(
+                          (part) => part.type === "source-url",
+                        ).length
+                      }
+                    />
+                    {message.parts
+                      .filter((part) => part.type === "source-url")
+                      .map((part, i) => (
+                        <SourcesContent key={`${message.id}-${i}`}>
+                          <Source
+                            key={`${message.id}-${i}`}
+                            href={part.url}
+                            title={part.url}
+                          />
+                        </SourcesContent>
+                      ))}
+                  </Sources>
                 )}
-                {message.role === "assistant" &&
-                  message.parts.filter((part) => part.type === "source-url")
-                    .length > 0 && (
-                    <Sources>
-                      <SourcesTrigger
-                        count={
-                          message.parts.filter(
-                            (part) => part.type === "source-url",
-                          ).length
+              {message.parts.map((part, i) => {
+                switch (part.type) {
+                  case "text":
+                    return (
+                      <Fragment key={`${message.id}-${i}`}>
+                        <Message from={message.role}>
+                          <MessageContent>
+                            <Response>{part.text}</Response>
+                          </MessageContent>
+                        </Message>
+                        {message.role === "assistant" &&
+                          i === enhancedMessages.length - 1 && (
+                            <Actions className="mt-2">
+                              <Action
+                                label="Retry"
+                                onClick={() => regenerate()}
+                              >
+                                <RefreshCcwIcon className="size-3" />
+                              </Action>
+                              <Action
+                                onClick={() =>
+                                  navigator.clipboard.writeText(part.text)
+                                }
+                                label="Copy"
+                              >
+                                <CopyIcon className="size-3" />
+                              </Action>
+                            </Actions>
+                          )}
+                      </Fragment>
+                    );
+                  case "reasoning":
+                    return (
+                      <Reasoning
+                        key={`${message.id}-${i}`}
+                        className="w-full"
+                        isStreaming={
+                          status === "streaming" &&
+                          i === message.parts.length - 1 &&
+                          message.id === enhancedMessages.at(-1)?.id
                         }
-                      />
-                      {message.parts
-                        .filter((part) => part.type === "source-url")
-                        .map((part, i) => (
-                          <SourcesContent key={`${message.id}-${i}`}>
-                            <Source
-                              key={`${message.id}-${i}`}
-                              href={part.url}
-                              title={part.url}
-                            />
-                          </SourcesContent>
-                        ))}
-                    </Sources>
-                  )}
-                {message.parts.map((part, i) => {
-                  switch (part.type) {
-                    case "text":
-                      return (
-                        <Fragment key={`${message.id}-${i}`}>
-                          <Message from={message.role}>
-                            <MessageContent>
-                              <Response>{part.text}</Response>
-                            </MessageContent>
-                          </Message>
-                          {message.role === "assistant" &&
-                            i === enhancedMessages.length - 1 && (
-                              <Actions className="mt-2">
-                                <Action
-                                  label="Retry"
-                                  onClick={() => regenerate()}
-                                >
-                                  <RefreshCcwIcon className="size-3" />
-                                </Action>
-                                <Action
-                                  onClick={() =>
-                                    navigator.clipboard.writeText(part.text)
-                                  }
-                                  label="Copy"
-                                >
-                                  <CopyIcon className="size-3" />
-                                </Action>
-                              </Actions>
-                            )}
-                        </Fragment>
-                      );
-                    case "reasoning":
-                      return (
-                        <Reasoning
-                          key={`${message.id}-${i}`}
-                          className="w-full"
-                          isStreaming={
-                            status === "streaming" &&
-                            i === message.parts.length - 1 &&
-                            message.id === enhancedMessages.at(-1)?.id
-                          }
-                        >
-                          <ReasoningTrigger />
-                          <ReasoningContent>{part.text}</ReasoningContent>
-                        </Reasoning>
-                      );
-                    default:
-                      return null;
-                  }
-                })}
-              </div>
-            ))}
-            {status === "submitted" && (
-              <Message from="assistant">
-                <MessageContent>
-                  <Response>Loading...</Response>
-                </MessageContent>
-              </Message>
-            )}
-          </ConversationContent>
-        </Conversation>
-      </div>
+                      >
+                        <ReasoningTrigger />
+                        <ReasoningContent>{part.text}</ReasoningContent>
+                      </Reasoning>
+                    );
+                  default:
+                    return null;
+                }
+              })}
+            </div>
+          ))}
+          {status === "submitted" && (
+            <Message from="assistant">
+              <MessageContent>
+                <Response>Loading...</Response>
+              </MessageContent>
+            </Message>
+          )}
+        </ConversationContent>
+      </Conversation>
       <PromptInput onSubmit={handleSubmit}>
         <PromptInputBody>
           <PromptInputTextarea

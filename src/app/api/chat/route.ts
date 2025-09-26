@@ -47,6 +47,12 @@ export async function POST(req: Request) {
     characterId: characterId as Id<"characters">,
   });
 
+  if (!character) {
+    return new Response("Character not found", {
+      status: 404,
+    });
+  }
+
   const participantMentionRegex = /@(\w+)/g;
   let contentParticipantsReplaced = textPart.text ?? "";
   const contentParticipants = [
@@ -98,7 +104,13 @@ export async function POST(req: Request) {
       },
     },
     messages: convertToModelMessages([...messages, message]),
-    system: character ? systemPrompt(character, lang) : "",
+    system: systemPrompt(
+      character,
+      lang,
+      participants.map(
+        (participant) => `${participant.name} (${participant.description})`,
+      ),
+    ),
   });
 
   return result.toUIMessageStreamResponse({
