@@ -79,6 +79,29 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     Id<"characters"> | undefined
   >();
   const character = useQuery(api.characters.getCharacter, { characterId });
+
+  // Get sender info for new messages
+  const getSenderInfo = (senderId: Id<"characters">) => {
+    if (senderId === characterId && character) {
+      return {
+        name: character.name,
+        avatarUrl: character.avatarUrl,
+        uniqueName: character.uniqueName,
+      };
+    }
+
+    const participant = participants?.find((p) => p._id === senderId);
+    if (participant) {
+      return {
+        name: participant.name,
+        avatarUrl: participant.avatarUrl,
+        uniqueName: participant.uniqueName,
+      };
+    }
+
+    return null;
+  };
+
   const { messages, sendMessage, status, regenerate } = useChat({
     messages: initialMessages as UIMessage[],
     transport: new DefaultChatTransport({
@@ -95,6 +118,44 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     onFinish: () => {
       setSelectedParticipant(undefined);
     },
+  });
+
+  // Create enhanced messages with sender information
+  const enhancedMessages: ExtendedUIMessage[] = messages.map((message) => {
+    // Check if this is an initial message with sender info
+    const initialMessage = initialMessages.find(
+      (m) => m.id === message.id,
+    ) as ExtendedUIMessage;
+    if (initialMessage?.senderDetails) {
+      return {
+        ...message,
+        senderId: initialMessage.senderId,
+        senderDetails: initialMessage.senderDetails,
+      };
+    }
+
+    // For new messages, determine sender based on role and context
+    if (message.role === "user") {
+      // User messages - could be from any participant if @mentioned
+      const targetCharacterId = selectedParticipant ?? characterId;
+      const senderDetails = getSenderInfo(targetCharacterId);
+      return {
+        ...message,
+        senderId: targetCharacterId,
+        senderDetails,
+      };
+    } else if (message.role === "assistant") {
+      // Assistant messages - from the character
+      const senderDetails = getSenderInfo(characterId);
+      return {
+        ...message,
+        senderId: characterId,
+        senderDetails,
+      };
+    }
+
+    // Fallback
+    return message as ExtendedUIMessage;
   });
 
   const handleSubmit = (message: PromptInputMessage) => {
@@ -135,9 +196,11 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
       <div className="flex-1 space-y-4">
         <Conversation className="h-full">
           <ConversationContent>
-            {messages.map((message) => (
+            {enhancedMessages.map((message) => (
               <div key={message.id}>
-                <SenderAvatar message={message as ExtendedUIMessage} />
+                {message.role === "assistant" && (
+                  <SenderAvatar message={message} />
+                )}
                 {message.role === "assistant" &&
                   message.parts.filter((part) => part.type === "source-url")
                     .length > 0 && (
@@ -173,7 +236,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                             </MessageContent>
                           </Message>
                           {message.role === "assistant" &&
-                            i === messages.length - 1 && (
+                            i === enhancedMessages.length - 1 && (
                               <Actions className="mt-2">
                                 <Action
                                   label="Retry"
@@ -201,7 +264,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                           isStreaming={
                             status === "streaming" &&
                             i === message.parts.length - 1 &&
-                            message.id === messages.at(-1)?.id
+                            message.id === enhancedMessages.at(-1)?.id
                           }
                         >
                           <ReasoningTrigger />
