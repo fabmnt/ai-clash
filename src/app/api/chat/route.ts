@@ -21,12 +21,16 @@ export async function POST(req: Request) {
   }: { message: UIMessage; chatId: string; characterId: string } =
     await req.json();
 
-  await fetchMutation(api.messages.createMessage, {
-    chatId: chatId as Id<"chats">,
-    sender: characterId as Id<"characters">,
-    role: message.role,
-    content: message.parts[0].type === "text" ? message.parts[0].text : "",
-  });
+  const metadata = message.metadata as { isParticipantRequest?: boolean };
+
+  if (!metadata.isParticipantRequest) {
+    await fetchMutation(api.messages.createMessage, {
+      chatId: chatId as Id<"chats">,
+      sender: characterId as Id<"characters">,
+      role: message.role,
+      content: message.parts[0].type === "text" ? message.parts[0].text : "",
+    });
+  }
 
   const dbMessages = await fetchQuery(api.messages.getMessagesWithSender, {
     chatId: chatId as Id<"chats">,

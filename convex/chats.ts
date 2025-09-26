@@ -24,9 +24,16 @@ export const getChat = query({
       .filter((q) => q.eq(q.field("chatId"), args.id))
       .collect();
 
+    if (!chat) {
+      return null;
+    }
+
+    const host = await ctx.db.get(chat.host);
+
     return {
       ...chat,
       messages,
+      host,
     };
   },
 });
