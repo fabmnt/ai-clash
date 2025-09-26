@@ -1,12 +1,13 @@
-import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { systemPrompt } from "@/config/prompts";
 
-const openrouter = createOpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY!,
+const openai = createOpenAI({
+  apiKey: process.env.VENICE_API_KEY!,
+  baseURL: "https://api.venice.ai/api/v1",
 });
 
 // Allow streaming responses up to 30 seconds
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
   }));
 
   const result = streamText({
-    model: openrouter(model),
+    model: openai.chat(model),
     messages: convertToModelMessages([...messages, message]),
     system: systemPrompt(
       character?.systemPrompt ?? "",

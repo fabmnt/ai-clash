@@ -58,6 +58,9 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
         };
       },
     }),
+    onFinish: () => {
+      setSelectedParticipant(undefined);
+    },
   });
 
   const handleSubmit = (message: PromptInputMessage) => {
