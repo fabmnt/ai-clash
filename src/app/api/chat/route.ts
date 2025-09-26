@@ -87,6 +87,13 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai.chat(model),
+    providerOptions: {
+      openai: {
+        venice_parameters: {
+          include_venice_system_prompt: false,
+        },
+      },
+    },
     messages: convertToModelMessages([...messages, message]),
     system: systemPrompt(
       character?.systemPrompt ?? "",
