@@ -291,7 +291,6 @@ export function UpdateCharacterDialog({
                 rows={4}
               />
             </div>
-            {/* 
             <div className="grid gap-2">
               <label
                 htmlFor="edit-character-instructions"
@@ -307,7 +306,7 @@ export function UpdateCharacterDialog({
                 disabled={isSubmitting}
                 rows={4}
               />
-            </div> */}
+            </div>
 
             {error ? (
               <p className="text-sm text-destructive" role="alert">

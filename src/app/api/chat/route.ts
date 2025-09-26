@@ -63,7 +63,10 @@ export async function POST(req: Request) {
   const result = streamText({
     model: openrouter(model),
     messages: convertToModelMessages([...messages, message]),
-    system: systemPrompt(character?.systemPrompt ?? ""),
+    system: systemPrompt(
+      character?.systemPrompt ?? "",
+      character?.instructions ?? "",
+    ),
   });
 
   return result.toUIMessageStreamResponse({

@@ -255,7 +255,7 @@ export function CreateCharacterDialog() {
               />
             </div>
 
-            {/*             <div className="grid gap-2">
+            <div className="grid gap-2">
               <label
                 htmlFor="character-instructions"
                 className="text-sm font-medium"
@@ -267,11 +267,10 @@ export function CreateCharacterDialog() {
                 value={formValues.instructions}
                 onChange={handleFieldChange("instructions")}
                 placeholder="Stay concise, offer two actionable options, and close with a motivational insight."
-                required
                 disabled={isSubmitting}
                 rows={4}
               />
-            </div> */}
+            </div>
 
             {error ? (
               <p className="text-sm text-destructive" role="alert">
