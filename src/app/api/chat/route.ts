@@ -31,15 +31,6 @@ export async function POST(req: Request) {
     chatId: chatId as Id<"chats">,
   });
 
-  const character = await fetchQuery(api.characters.getCharacter, {
-    characterId: characterId as Id<"characters">,
-  });
-
-  const model = character?.model ?? "x-ai/grok-4-fast:free";
-  console.log(
-    `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
-  );
-
   const participants = await fetchQuery(api.chats.getParticipants, {
     chatId: chatId as Id<"chats">,
   });
@@ -53,7 +44,7 @@ export async function POST(req: Request) {
   const participantMentionRegex = /@(\w+)/g;
   let contentParticipantsReplaced = textPart.text ?? "";
   const contentParticipants = textPart.text.match(participantMentionRegex);
-  console.log({ contentParticipants });
+
   if (contentParticipants) {
     // replace all mentions with the participant's name and description
     for (const contentParticipant of contentParticipants) {
@@ -72,8 +63,15 @@ export async function POST(req: Request) {
     }
   }
 
+  const character = await fetchQuery(api.characters.getCharacter, {
+    characterId: characterId as Id<"characters">,
+  });
+
+  const model = character?.model ?? "x-ai/grok-4-fast:free";
+  console.log(
+    `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
+  );
   textPart.text = contentParticipantsReplaced;
-  console.log({ contentParticipantsReplaced });
 
   const messages: UIMessage[] = dbMessages.map((message) => ({
     role: message.role as "system" | "user" | "assistant",

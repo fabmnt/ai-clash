@@ -40,6 +40,10 @@ type ChatProps = {
 
 export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
+  const participants = useQuery(api.chats.getParticipants, { chatId });
+  const [selectedParticipant, setSelectedParticipant] = useState<
+    Id<"characters"> | undefined
+  >();
   const character = useQuery(api.characters.getCharacter, { characterId });
   const { messages, sendMessage, status, regenerate } = useChat({
     messages: initialMessages,
@@ -64,7 +68,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
       {
         body: {
           chatId,
-          characterId,
+          characterId: selectedParticipant ?? characterId,
         },
       },
     );
@@ -74,6 +78,20 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputValue = e.target.value;
     setInput(inputValue);
+
+    if (!inputValue.includes("@")) {
+      setSelectedParticipant(undefined);
+      return;
+    }
+
+    const participantMentionRegex = /@(\w+)/g;
+    const participantMatch = inputValue.match(participantMentionRegex)?.[0];
+    const participant = participants?.find(
+      (participant) =>
+        participant.uniqueName === participantMatch?.replace("@", ""),
+    );
+    console.log({ participant, participantMatch, participants });
+    setSelectedParticipant(participant?._id);
   };
 
   return (
