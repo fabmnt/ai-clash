@@ -9,7 +9,7 @@ export default async function ChatPage(
   props: PageProps<"/chat/[characterId]/[chatId]">,
 ) {
   const { characterId, chatId } = await props.params;
-  const messages = await fetchQuery(api.messages.getMessages, {
+  const messages = await fetchQuery(api.messages.getMessagesWithSender, {
     chatId: chatId as Id<"chats">,
   });
 
@@ -17,6 +17,8 @@ export default async function ChatPage(
     role: message.role as "system" | "user" | "assistant",
     id: message._id,
     parts: [{ type: "text" as const, text: message.content }],
+    senderId: message.sender,
+    senderDetails: message.senderDetails,
   }));
 
   return (

@@ -33,3 +33,33 @@ export const getMessages = query({
       .collect();
   },
 });
+
+export const getMessagesWithSender = query({
+  args: {
+    chatId: v.id("chats"),
+  },
+  handler: async (ctx, args) => {
+    const messages = await ctx.db
+      .query("messages")
+      .filter((q) => q.eq(q.field("chatId"), args.chatId))
+      .collect();
+
+    const messagesWithSender = await Promise.all(
+      messages.map(async (message) => {
+        const sender = await ctx.db.get(message.sender);
+        return {
+          ...message,
+          senderDetails: sender
+            ? {
+                name: sender.name,
+                avatarUrl: sender.avatarUrl,
+                uniqueName: sender.uniqueName,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return messagesWithSender;
+  },
+});

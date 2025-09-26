@@ -31,12 +31,46 @@ import {
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+type ExtendedUIMessage = UIMessage & {
+  senderId?: Id<"characters">;
+  senderDetails?: {
+    name: string;
+    avatarUrl: string;
+    uniqueName: string;
+  } | null;
+};
 
 type ChatProps = {
   characterId: Id<"characters">;
   chatId: Id<"chats">;
-  initialMessages: UIMessage[];
+  initialMessages: ExtendedUIMessage[];
 };
+
+function SenderAvatar({ message }: { message: ExtendedUIMessage }) {
+  const extendedMessage = message as ExtendedUIMessage;
+
+  if (!extendedMessage.senderDetails) {
+    return null;
+  }
+
+  const { senderDetails } = extendedMessage;
+
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <Avatar className="size-6">
+        <AvatarImage src={senderDetails.avatarUrl} alt={senderDetails.name} />
+        <AvatarFallback>
+          {senderDetails.name.charAt(0).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+      <span className="text-sm font-medium text-muted-foreground">
+        {senderDetails.name}
+      </span>
+    </div>
+  );
+}
 
 export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   const [input, setInput] = useState("");
@@ -46,7 +80,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
   >();
   const character = useQuery(api.characters.getCharacter, { characterId });
   const { messages, sendMessage, status, regenerate } = useChat({
-    messages: initialMessages,
+    messages: initialMessages as UIMessage[],
     transport: new DefaultChatTransport({
       prepareSendMessagesRequest: ({ id, messages, body }) => {
         return {
@@ -93,7 +127,6 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
       (participant) =>
         participant.uniqueName === participantMatch?.replace("@", ""),
     );
-    console.log({ participant, participantMatch, participants });
     setSelectedParticipant(participant?._id);
   };
 
@@ -104,6 +137,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
           <ConversationContent>
             {messages.map((message) => (
               <div key={message.id}>
+                <SenderAvatar message={message as ExtendedUIMessage} />
                 {message.role === "assistant" &&
                   message.parts.filter((part) => part.type === "source-url")
                     .length > 0 && (

@@ -95,10 +95,7 @@ export async function POST(req: Request) {
       },
     },
     messages: convertToModelMessages([...messages, message]),
-    system: systemPrompt(
-      character?.systemPrompt ?? "",
-      character?.instructions ?? "",
-    ),
+    system: character ? systemPrompt(character) : "",
   });
 
   return result.toUIMessageStreamResponse({
