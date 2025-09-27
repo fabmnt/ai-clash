@@ -30,6 +30,8 @@ ${participants.join(", ")}
 
 export const createSystemMessage = (character: Doc<"characters">) => `
 Your next message will be playing as ${character.name}.
+Do not repeat yourself.
+Do not repeat the same message or idea sent previously by your character.
 
 <character-name>
 ${character.name}
