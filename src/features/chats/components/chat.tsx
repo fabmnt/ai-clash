@@ -145,6 +145,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
       return;
     }
 
+    setSelectedParticipant(participantId);
     sendMessage(
       {
         text: `@${participant.uniqueName}`,
@@ -172,9 +173,29 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
               message.metadata?.senderId as Id<"characters">,
             );
 
+            const showLoading =
+              isLastMessage(message) &&
+              (status === "submitted" || status === "streaming");
+
             return (
               <div key={message.id}>
-                {message.role === "assistant" && sender && (
+                {showLoading && (
+                  <div>
+                    <SenderAvatar
+                      character={
+                        findSender(
+                          selectedParticipant ?? characterId,
+                        ) as Doc<"characters">
+                      }
+                    />
+                    <Message from="assistant">
+                      <MessageContent>
+                        <div className="loading loading-dots loading-sm" />
+                      </MessageContent>
+                    </Message>
+                  </div>
+                )}
+                {message.role === "assistant" && sender && !showLoading && (
                   <SenderAvatar character={sender} />
                 )}
                 {message.role === "assistant" &&
@@ -283,13 +304,6 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
               </div>
             );
           })}
-          {status === "submitted" && (
-            <Message from="assistant">
-              <MessageContent>
-                <Response>Loading...</Response>
-              </MessageContent>
-            </Message>
-          )}
         </ConversationContent>
       </Conversation>
       <PromptInput onSubmit={handleSubmit}>
