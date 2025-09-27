@@ -3,7 +3,7 @@ import { convertToModelMessages, streamText } from "ai";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
-import { systemPrompt } from "@/config/prompts";
+import { createSystemMessage, systemPrompt } from "@/config/prompts";
 import type { AppUIMessage } from "@/features/chats/components/chat";
 
 const openai = createOpenAI({
@@ -108,6 +108,17 @@ export async function POST(req: Request) {
     },
   }));
 
+  const systemMessage: AppUIMessage = {
+    id: "",
+    role: "system",
+    parts: [
+      {
+        type: "text",
+        text: createSystemMessage(character),
+      },
+    ],
+  };
+
   const result = streamText({
     model: openai.chat(model),
     providerOptions: {
@@ -117,7 +128,7 @@ export async function POST(req: Request) {
         },
       },
     },
-    messages: convertToModelMessages([...messages, message]),
+    messages: convertToModelMessages([...messages, message, systemMessage]),
     system: systemPrompt(
       character,
       participants.map(
