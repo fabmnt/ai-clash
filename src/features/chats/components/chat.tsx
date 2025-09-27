@@ -181,7 +181,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
             return (
               <div key={message.id}>
                 {showLoading && (
-                  <div>
+                  <div className="flex items-center gap-2 w-full">
                     <SenderAvatar
                       character={
                         findSender(
@@ -189,11 +189,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                         ) as Doc<"characters">
                       }
                     />
-                    <Message from="assistant">
-                      <MessageContent>
-                        <div className="loading loading-dots loading-sm" />
-                      </MessageContent>
-                    </Message>
+                    <div className="loading loading-dots loading-sm" />
                   </div>
                 )}
                 {message.role === "assistant" && sender && !showLoading && (
