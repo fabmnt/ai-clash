@@ -91,7 +91,6 @@ export async function POST(req: Request) {
   console.log(
     `[CHAT:REQUEST] Using model: ${model}. Character: ${character?.name}`,
   );
-  const lang = "spanish";
   textPart.text = contentParticipantsReplaced;
 
   const messages: AppUIMessage[] = dbMessages.map((message) => ({
@@ -121,7 +120,6 @@ export async function POST(req: Request) {
     messages: convertToModelMessages([...messages, message]),
     system: systemPrompt(
       character,
-      lang,
       participants.map(
         (participant) => `${participant.name} (${participant.description})`,
       ),
