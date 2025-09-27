@@ -175,6 +175,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
 
             const showLoading =
               isLastMessage(message) &&
+              message.role === "assistant" &&
               (status === "submitted" || status === "streaming");
 
             return (
