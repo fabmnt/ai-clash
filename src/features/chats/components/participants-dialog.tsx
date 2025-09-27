@@ -105,7 +105,6 @@ export function ParticipantsDialog({
                   value={search}
                   onChange={(event) => {
                     const value = event.target.value;
-                    console.log(value);
                     setSearch(value);
                     if (value.trim().length > 0) {
                       setPopoverOpen(true);

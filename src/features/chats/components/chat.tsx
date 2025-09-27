@@ -7,7 +7,7 @@ import { CopyIcon, RefreshCcwIcon } from "lucide-react";
 import { Fragment, useState } from "react";
 import * as z from "zod";
 import { api } from "#/convex/_generated/api";
-import type { Id } from "#/convex/_generated/dataModel";
+import type { Doc, Id } from "#/convex/_generated/dataModel";
 import { Action, Actions } from "@/components/ai-elements/actions";
 import {
   Conversation,
@@ -34,40 +34,32 @@ import {
 } from "@/components/ai-elements/sources";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type ExtendedUIMessage = UIMessage & {
-  senderId?: Id<"characters">;
-  senderDetails?: {
-    name: string;
-    avatarUrl: string;
-    uniqueName: string;
-  } | null;
-};
+export const messageMetadataSchema = z.object({
+  isParticipantRequest: z.boolean().optional(),
+  senderId: z.string().optional(),
+});
+
+export type MessageMetadata = z.infer<typeof messageMetadataSchema>;
+
+export type AppUIMessage = UIMessage<MessageMetadata>;
 
 type ChatProps = {
   characterId: Id<"characters">;
   chatId: Id<"chats">;
-  initialMessages: ExtendedUIMessage[];
+  initialMessages: AppUIMessage[];
 };
 
-function SenderAvatar({ message }: { message: ExtendedUIMessage }) {
-  const extendedMessage = message as ExtendedUIMessage;
-
-  if (!extendedMessage.senderDetails) {
-    return null;
-  }
-
-  const { senderDetails } = extendedMessage;
-
+function SenderAvatar({ character }: { character: Doc<"characters"> }) {
   return (
     <div className="flex items-center gap-2 mb-2">
       <Avatar className="size-6">
-        <AvatarImage src={senderDetails.avatarUrl} alt={senderDetails.name} />
+        <AvatarImage src={character.avatarUrl} alt={character.name} />
         <AvatarFallback>
-          {senderDetails.name.charAt(0).toUpperCase()}
+          {character.name.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
       <span className="text-sm font-medium text-muted-foreground">
-        {senderDetails.name}
+        {character.name}
       </span>
     </div>
   );
@@ -84,34 +76,12 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     Id<"characters"> | undefined
   >();
   const character = useQuery(api.characters.getCharacter, { characterId });
-
-  // Get sender info for new messages
-  const getSenderInfo = (senderId: Id<"characters">) => {
-    if (senderId === characterId && character) {
-      return {
-        name: character.name,
-        avatarUrl: character.avatarUrl,
-        uniqueName: character.uniqueName,
-      };
-    }
-
-    const participant = participants.find((p) => p._id === senderId);
-    if (participant) {
-      return {
-        name: participant.name,
-        avatarUrl: participant.avatarUrl,
-        uniqueName: participant.uniqueName,
-      };
-    }
-
-    return null;
+  const findSender = (senderId: Id<"characters">) => {
+    return allParticipants.find((p) => p._id === senderId);
   };
 
   const { messages, sendMessage, status, regenerate } = useChat({
-    messages: initialMessages as UIMessage[],
-    messageMetadataSchema: z.object({
-      isParticipantRequest: z.boolean().optional(),
-    }),
+    messages: initialMessages,
     transport: new DefaultChatTransport({
       prepareSendMessagesRequest: ({ id, messages, body }) => {
         return {
@@ -128,47 +98,9 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     },
   });
 
-  const isLastMessage = (message: UIMessage) => {
+  const isLastMessage = (message: AppUIMessage) => {
     return message.id === messages.at(-1)?.id;
   };
-
-  // Create enhanced messages with sender information
-  const enhancedMessages: ExtendedUIMessage[] = messages.map((message) => {
-    // Check if this is an initial message with sender info
-    const initialMessage = initialMessages.find(
-      (m) => m.id === message.id,
-    ) as ExtendedUIMessage;
-    if (initialMessage?.senderDetails) {
-      return {
-        ...message,
-        senderId: initialMessage.senderId,
-        senderDetails: initialMessage.senderDetails,
-      };
-    }
-
-    // For new messages, determine sender based on role and context
-    if (message.role === "user") {
-      // User messages - could be from any participant if @mentioned
-      const targetCharacterId = selectedParticipant ?? characterId;
-      const senderDetails = getSenderInfo(targetCharacterId);
-      return {
-        ...message,
-        senderId: targetCharacterId,
-        senderDetails,
-      };
-    } else if (message.role === "assistant") {
-      // Assistant messages - from the character
-      const senderDetails = getSenderInfo(characterId);
-      return {
-        ...message,
-        senderId: characterId,
-        senderDetails,
-      };
-    }
-
-    // Fallback
-    return message as ExtendedUIMessage;
-  });
 
   const handleSubmit = (message: PromptInputMessage) => {
     sendMessage(
@@ -176,6 +108,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
         text: message.text ?? "",
         metadata: {
           isParticipantRequest: false,
+          senderId: selectedParticipant ?? characterId,
         },
       },
       {
@@ -214,9 +147,10 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
 
     sendMessage(
       {
-        text: ``,
+        text: `@${participant.uniqueName}`,
         metadata: {
           isParticipantRequest: true,
+          senderId: participantId,
         },
       },
       {
@@ -225,24 +159,23 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
     );
   };
 
+  const messagesWithoutParticipantRequests = messages.filter(
+    (message) => !message.metadata?.isParticipantRequest,
+  );
+
   return (
     <div className="h-[720px] lg:h-[540px] overflow-y-auto flex flex-col">
       <Conversation className="flex-1">
         <ConversationContent>
-          {enhancedMessages
-            .filter((message) => {
-              const metadata = message.metadata as {
-                isParticipantRequest?: boolean;
-              } | null;
-              if (!metadata) {
-                return true;
-              }
-              return !metadata.isParticipantRequest;
-            })
-            .map((message) => (
+          {messagesWithoutParticipantRequests.map((message) => {
+            const sender = findSender(
+              message.metadata?.senderId as Id<"characters">,
+            );
+
+            return (
               <div key={message.id}>
-                {message.role === "assistant" && (
-                  <SenderAvatar message={message} />
+                {message.role === "assistant" && sender && (
+                  <SenderAvatar character={sender} />
                 )}
                 {message.role === "assistant" &&
                   message.parts.filter((part) => part.type === "source-url")
@@ -279,7 +212,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                             </MessageContent>
                           </Message>
                           {message.role === "assistant" &&
-                            i === enhancedMessages.length - 1 && (
+                            i === messages.length - 1 && (
                               <Actions className="mt-2">
                                 <Action
                                   label="Retry"
@@ -307,7 +240,7 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                           isStreaming={
                             status === "streaming" &&
                             i === message.parts.length - 1 &&
-                            message.id === enhancedMessages.at(-1)?.id
+                            message.id === messages.at(-1)?.id
                           }
                         >
                           <ReasoningTrigger />
@@ -348,7 +281,8 @@ export function Chat({ characterId, chatId, initialMessages }: ChatProps) {
                     </div>
                   )}
               </div>
-            ))}
+            );
+          })}
           {status === "submitted" && (
             <Message from="assistant">
               <MessageContent>

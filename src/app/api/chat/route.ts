@@ -1,9 +1,10 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 import { fetchMutation, fetchQuery } from "convex/nextjs";
 import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { systemPrompt } from "@/config/prompts";
+import type { AppUIMessage } from "@/features/chats/components/chat";
 
 const openai = createOpenAI({
   apiKey: process.env.VENICE_API_KEY!,
@@ -18,10 +19,16 @@ export async function POST(req: Request) {
     message,
     chatId,
     characterId,
-  }: { message: UIMessage; chatId: string; characterId: string } =
+  }: { message: AppUIMessage; chatId: string; characterId: string } =
     await req.json();
 
-  const metadata = message.metadata as { isParticipantRequest?: boolean };
+  const metadata = message.metadata;
+
+  if (!metadata) {
+    return new Response("Bad request", {
+      status: 400,
+    });
+  }
 
   if (!metadata.isParticipantRequest) {
     await fetchMutation(api.messages.createMessage, {
@@ -87,7 +94,7 @@ export async function POST(req: Request) {
   const lang = "spanish";
   textPart.text = contentParticipantsReplaced;
 
-  const messages: UIMessage[] = dbMessages.map((message) => ({
+  const messages: AppUIMessage[] = dbMessages.map((message) => ({
     role: message.role as "system" | "user" | "assistant",
     id: message._id,
     parts: [
@@ -96,6 +103,10 @@ export async function POST(req: Request) {
         text: message.content,
       },
     ],
+    metadata: {
+      senderId: message.sender,
+      isParticipantRequest: message.isParticipantRequest,
+    },
   }));
 
   const result = streamText({
@@ -118,10 +129,15 @@ export async function POST(req: Request) {
   });
 
   return result.toUIMessageStreamResponse({
+    messageMetadata: () => ({
+      senderId: characterId,
+      isParticipantRequest: false,
+    }),
     onFinish: async ({ responseMessage }) => {
       const textType = responseMessage.parts.find(
         (part) => part.type === "text",
       );
+
       if (!textType) {
         return;
       }

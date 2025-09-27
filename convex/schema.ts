@@ -31,5 +31,6 @@ export default defineSchema({
       v.literal("assistant"),
     ),
     content: v.string(),
+    isParticipantRequest: v.optional(v.boolean()),
   }),
 });

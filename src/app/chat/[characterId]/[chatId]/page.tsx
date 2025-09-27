@@ -3,7 +3,7 @@ import { api } from "#/convex/_generated/api";
 import type { Id } from "#/convex/_generated/dataModel";
 import { Container } from "@/components/container";
 import { ChatHeader } from "@/features/characters/components/chat-header";
-import { Chat } from "@/features/chats/components/chat";
+import { type AppUIMessage, Chat } from "@/features/chats/components/chat";
 
 export default async function ChatPage(
   props: PageProps<"/chat/[characterId]/[chatId]">,
@@ -13,12 +13,14 @@ export default async function ChatPage(
     chatId: chatId as Id<"chats">,
   });
 
-  const initialMessages = messages.map((message) => ({
+  const initialMessages: AppUIMessage[] = messages.map((message) => ({
     role: message.role as "system" | "user" | "assistant",
     id: message._id,
     parts: [{ type: "text" as const, text: message.content }],
-    senderId: message.sender,
-    senderDetails: message.senderDetails,
+    metadata: {
+      senderId: message.sender,
+      isParticipantRequest: message.isParticipantRequest,
+    },
   }));
 
   return (
